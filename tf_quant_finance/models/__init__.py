@@ -1,3 +1,4 @@
+# Lint as: python3
 # Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +14,24 @@
 # limitations under the License.
 """TensorFlow Quantitative Finance tools to build Diffusion Models."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-
+from tf_quant_finance.models import euler_sampling
+from tf_quant_finance.models import hull_white
+from tf_quant_finance.models.generic_ito_process import GenericItoProcess
+from tf_quant_finance.models.geometric_brownian_motion import GeometricBrownianMotion
+from tf_quant_finance.models.heston_model import HestonModel
 from tf_quant_finance.models.ito_process import ItoProcess
+from tf_quant_finance.models.joined_ito_process import JoinedItoProcess
+
 from tensorflow.python.util.all_util import remove_undocumented  # pylint: disable=g-direct-tensorflow-import
 
 _allowed_symbols = [
+    'euler_sampling',
+    'HestonModel',
+    'hull_white',
+    'GenericItoProcess',
+    'GeometricBrownianMotion',
     'ItoProcess',
+    'JoinedItoProcess',
 ]
 
 remove_undocumented(__name__, _allowed_symbols)

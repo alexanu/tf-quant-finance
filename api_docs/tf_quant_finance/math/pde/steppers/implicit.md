@@ -1,0 +1,26 @@
+<div itemscope itemtype="http://developers.google.com/ReferenceObject">
+<meta itemprop="name" content="tf_quant_finance.math.pde.steppers.implicit" />
+<meta itemprop="path" content="Stable" />
+</div>
+
+# Module: tf_quant_finance.math.pde.steppers.implicit
+
+<!-- Insert buttons and diff -->
+
+<table class="tfo-notebook-buttons tfo-api" align="left">
+</table>
+
+<a target="_blank" href="https://github.com/google/tf-quant-finance/blob/master/tf_quant_finance/math/pde/steppers/implicit.py">View source</a>
+
+
+
+Implicit time marching scheme for parabolic PDEs.
+
+
+
+## Functions
+
+[`implicit_scheme(...)`](../../../../tf_quant_finance/math/pde/steppers/implicit/implicit_scheme.md): Constructs the time marching scheme.
+
+[`implicit_step(...)`](../../../../tf_quant_finance/math/pde/steppers/implicit/implicit_step.md): Creates a stepper function with implicit time marching scheme.
+

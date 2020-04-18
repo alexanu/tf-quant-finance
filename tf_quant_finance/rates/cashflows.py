@@ -1,3 +1,4 @@
+# Lint as: python3
 # Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,15 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# Lint as: python2, python3
 """Collection of functions to compute properties of cashflows."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import tensorflow as tf
+import tensorflow.compat.v2 as tf
 
 
 def pv_from_yields(cashflows,
@@ -35,7 +30,7 @@ def pv_from_yields(cashflows,
   to the yield of the bond as defined in Section 4.4 of Ref [1]. This is
   sometimes also referred to as the internal rate of return of a bond.
 
-  ### Example
+  #### Example
 
   The following example demonstrates the present value computation for two
   bonds. Both bonds have 1000 face value with semi-annual coupons. The first
@@ -69,7 +64,7 @@ def pv_from_yields(cashflows,
         cashflows, times, yields_to_maturity, groups=groups, dtype=dtype)
   ```
 
-  ### References:
+  #### References:
 
   [1]: John C. Hull. Options, Futures and Other Derivatives. Ninth Edition.
     June 2006.
@@ -135,7 +130,7 @@ def yields_from_pv(cashflows,
   to the yield of the bond as defined in Section 4.4 of Ref [1]. This is
   sometimes also referred to as the internal rate of return of a bond.
 
-  ### Example
+  #### Example
 
   The following example demonstrates the yield computation for two
   bonds. Both bonds have 1000 face value with semi-annual coupons. The first
@@ -170,7 +165,7 @@ def yields_from_pv(cashflows,
         cashflows, times, present_values, groups=groups, dtype=dtype)
   ```
 
-  ### References:
+  #### References:
 
   [1]: John C. Hull. Options, Futures and Other Derivatives. Ninth Edition.
     June 2006.
@@ -248,7 +243,7 @@ def yields_from_pv(cashflows,
       return (next_should_stop, yields + delta_yields)
 
     loop_vars = (tf.convert_to_tensor(False), yields0)
-    _, estimated_yields = tf.compat.v1.while_loop(
+    _, estimated_yields = tf.while_loop(
         _cond,
         _body,
         loop_vars,

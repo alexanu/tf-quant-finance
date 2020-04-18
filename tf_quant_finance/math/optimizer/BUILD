@@ -2,14 +2,12 @@
 
 licenses(["notice"])
 
-# [internal] load python3.bzl
-
 package(default_visibility = ["//tf_quant_finance:__subpackages__"])
 
 py_library(
     name = "optimizer",
     srcs = ["__init__.py"],
-    srcs_version = "PY2AND3",
+    srcs_version = "PY3",
     deps = [
         ":conjugate_gradient",
     ],
@@ -19,8 +17,12 @@ py_test(
     name = "optimizer_test",
     size = "medium",
     srcs = ["optimizer_test.py"],
+    python_version = "PY3",
     deps = [
         "//tf_quant_finance",
+        # test util,
+        # numpy dep,
+        # tensorflow dep,
     ],
 )
 
@@ -39,9 +41,19 @@ py_test(
     size = "medium",
     timeout = "long",
     srcs = ["conjugate_gradient_test.py"],
+    python_version = "PY3",
+    shard_count = 5,
     deps = [
         "//tf_quant_finance",
+        # test util,
         # numpy dep,
         # tensorflow dep,
+    ],
+)
+
+filegroup(
+    name = "docs",
+    srcs = [
+        "README.md",
     ],
 )

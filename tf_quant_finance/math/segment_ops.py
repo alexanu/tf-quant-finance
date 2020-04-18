@@ -1,3 +1,4 @@
+# Lint as: python3
 # Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,16 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# Lint as: python2, python3
 """Element wise ops acting on segments of arrays."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
-import tensorflow as tf
+import tensorflow.compat.v2 as tf
 
-from tf_quant_finance.math import diff as diff_ops
+from tf_quant_finance.math import diff_ops
 
 
 def segment_diff(x,
@@ -39,7 +36,7 @@ def segment_diff(x,
   segment. The result is effectively a concatenation of the results of `diff`
   applied to each segment.
 
-  ## Example
+  #### Example
 
   ```python
     x = tf.constant([2, 5, 1, 7, 9] + [32, 10, 12, 3] + [4, 8, 5])
@@ -109,10 +106,13 @@ def segment_diff(x,
 
     needs_fix = tf.scatter_nd(
         fix_indices,
-        tf.reshape(tf.ones_like(fix_indices, dtype=tf.bool), [-1]),
+        # Unfortunately, scatter_nd doesn't support bool on GPUs so we need to
+        # do ints here and then convert to bool.
+        tf.reshape(tf.ones_like(fix_indices, dtype=tf.int32), [-1]),
         shape=tf.shape(x))
     # If exclusive is False, then needs_fix means we need to replace the values
     # in raw_diffs at those locations with the values in x.
+    needs_fix = tf.cast(needs_fix, dtype=tf.bool)
     if not exclusive:
       return tf.where(needs_fix, x, raw_diffs)
 
@@ -135,7 +135,7 @@ def segment_cumsum(x, segment_ids, exclusive=False, dtype=None, name=None):
   `tf.math.cumsum` applied to each segment with the same interpretation for the
   argument `exclusive`.
 
-  ## Example
+  #### Example
 
   ```python
     x = tf.constant([2, 5, 1, 7, 9] + [32, 10, 12, 3] + [4, 8, 5])
@@ -174,7 +174,7 @@ def segment_cumsum(x, segment_ids, exclusive=False, dtype=None, name=None):
       `n-sum(min(order, length(segment_j)), j)` where the sum is over segments.
       If `exclusive` is False, then the size is `n`.
   """
-  with tf.compat.v1.name_scope(name, default_name='segment_diff', values=[x]):
+  with tf.compat.v1.name_scope(name, default_name='segment_cumsum', values=[x]):
     x = tf.convert_to_tensor(x, dtype=dtype)
     raw_cumsum = tf.math.cumsum(x, exclusive=exclusive)
     if segment_ids is None:
@@ -197,3 +197,6 @@ def segment_cumsum(x, segment_ids, exclusive=False, dtype=None, name=None):
         scanner, (x, segment_ids),
         initializer=(tf.zeros_like(x[0]), tf.zeros_like(segment_ids[0]) - 1,
                      tf.zeros_like(x[0])))[0]
+
+
+__all__ = ['segment_cumsum', 'segment_diff']

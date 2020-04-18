@@ -2,14 +2,12 @@
 
 licenses(["notice"])
 
-# [internal] load python3.bzl
-
 package(default_visibility = ["//tf_quant_finance:__subpackages__"])
 
 py_library(
     name = "hagan_west",
     srcs = ["__init__.py"],
-    srcs_version = "PY2AND3",
+    srcs_version = "PY3",
     deps = [
         ":bond_curve",
         ":monotone_convex",
@@ -19,9 +17,9 @@ py_library(
 py_library(
     name = "monotone_convex",
     srcs = ["monotone_convex.py"],
-    srcs_version = "PY2AND3",
+    srcs_version = "PY3",
     deps = [
-        "//tf_quant_finance/math:diff",
+        "//tf_quant_finance/math:diff_ops",
         "//tf_quant_finance/math:piecewise",
         "//tf_quant_finance/rates:forwards",
         # numpy dep,
@@ -33,9 +31,11 @@ py_test(
     name = "monotone_convex_test",
     size = "small",
     srcs = ["monotone_convex_test.py"],
-    shard_count = 3,
+    python_version = "PY3",
+    shard_count = 5,
     deps = [
         ":monotone_convex",
+        # test util,
         # numpy dep,
         # tensorflow dep,
     ],
@@ -44,7 +44,7 @@ py_test(
 py_library(
     name = "bond_curve",
     srcs = ["bond_curve.py"],
-    srcs_version = "PY2AND3",
+    srcs_version = "PY3",
     deps = [
         ":monotone_convex",
         "//tf_quant_finance/rates:cashflows",
@@ -55,13 +55,22 @@ py_library(
 
 py_test(
     name = "bond_curve_test",
-    size = "small",
+    size = "medium",
     srcs = ["bond_curve_test.py"],
+    python_version = "PY3",
     shard_count = 3,
     deps = [
         ":bond_curve",
         ":monotone_convex",
+        # test util,
         # numpy dep,
         # tensorflow dep,
+    ],
+)
+
+filegroup(
+    name = "docs",
+    srcs = [
+        "README.md",
     ],
 )

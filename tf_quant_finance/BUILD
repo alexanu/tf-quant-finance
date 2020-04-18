@@ -19,12 +19,36 @@ exports_files(["LICENSE"])
 py_library(
     name = "tf_quant_finance",
     srcs = ["__init__.py"],
-    srcs_version = "PY2AND3",
+    srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
+        "//tf_quant_finance/black_scholes",
+        "//tf_quant_finance/experimental",
         "//tf_quant_finance/math",
         "//tf_quant_finance/models",
         "//tf_quant_finance/rates",
-        "//tf_quant_finance/volatility",
     ],
+)
+
+# The "docs" filegroups define which files should be copied to the generated
+# docs folder. For example, its convenient to have a README.md from each package
+# there.
+filegroup(
+    name = "docs",
+    data = [
+        "//tf_quant_finance/black_scholes:docs",
+        "//tf_quant_finance/experimental:docs",
+        "//tf_quant_finance/math:docs",
+        "//tf_quant_finance/models:docs",
+        "//tf_quant_finance/rates:docs",
+    ],
+    visibility = ["__subpackages__"],
+)
+
+filegroup(
+    name = "generated_docs",
+    srcs = glob([
+        "g3doc/**",
+    ]),
+    visibility = ["__subpackages__"],
 )

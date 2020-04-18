@@ -1,3 +1,4 @@
+# Lint as: python3
 # Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,15 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# Lint as: python2, python3
 """Collection of functions to compute properties of cashflows."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import tensorflow as tf
+import tensorflow.compat.v2 as tf
 
 from tf_quant_finance.math import segment_ops
 
@@ -62,7 +57,7 @@ def forward_rates_from_yields(yields,
   Instead of a batch as an extra dimension, we support the concept of groups
   (also see documentation for `tf.segment_sum` which uses the same concept).
 
-  ### Example
+  #### Example
 
   The following example illustrates this method along with the concept of
   groups. Assuming there are two sets of zero rates (e.g. for different
@@ -81,7 +76,7 @@ def forward_rates_from_yields(yields,
 
   ```python
     dtype = np.float64
-    groups = np.array([0,    0    0,   1,    1,   1,  1  ])
+    groups = np.array([0, 0, 0, 1, 1, 1, 1])
     times = np.array([0.25, 0.5, 1.0, 0.25, 0.5, 1.0, 1.5], dtype=dtype)
     rates = np.array([0.04, 0.041, 0.044, 0.022, 0.025, 0.028, 0.036],
                      dtype=dtype)
@@ -89,7 +84,7 @@ def forward_rates_from_yields(yields,
         rates, times, groups=groups, dtype=dtype)
   ```
 
-  ### References:
+  #### References:
 
   [1]: John C. Hull. Options, Futures and Other Derivatives. Ninth Edition.
     June 2006.
@@ -170,7 +165,7 @@ def yields_from_forward_rates(discrete_forwards,
   groups (also see documentation for `tf.segment_sum` which uses the same
   concept).
 
-  ### Example
+  #### Example
 
   The following example illustrates this method along with the concept of
   groups. Assuming there are two sets of zero rates (e.g. for different
@@ -188,7 +183,7 @@ def yields_from_forward_rates(discrete_forwards,
 
   ```python
     dtype = np.float64
-    groups = np.array([0,    0    0,   1,    1,   1,  1  ])
+    groups = np.array([0, 0, 0, 1, 1, 1, 1])
     times = np.array([0.25, 0.5, 1.0, 0.25, 0.5, 1.0, 1.5], dtype=dtype)
     discrete_forwards = np.array(
         [0.04, 0.042, 0.047, 0.022, 0.028, 0.031, 0.052], dtype=dtype)
@@ -197,7 +192,7 @@ def yields_from_forward_rates(discrete_forwards,
     # Produces: [0.04, 0.041, 0.044, 0.022, 0.025, 0.028, 0.036]
   ```
 
-  ### References:
+  #### References:
 
   [1]: John C. Hull. Options, Futures and Other Derivatives. Ninth Edition.
     June 2006.
@@ -246,3 +241,6 @@ def yields_from_forward_rates(discrete_forwards,
     x = intervals * discrete_forwards
     y = segment_ops.segment_cumsum(x, exclusive=False, segment_ids=groups)
     return y / times
+
+
+__all__ = ['forward_rates_from_yields', 'yields_from_forward_rates']

@@ -1,3 +1,4 @@
+# Lint as: python3
 # Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# Lint as: python2, python3
 """The monotone convex interpolation method.
 
 The monotone convex method is a scheme devised by Hagan and West (Ref [1]). It
@@ -43,7 +43,7 @@ to evaluate the `f(t)` for `t` as a vector of times but not build multiple
 curves at the same time).
 
 
-### References:
+#### References:
 
 [1]: Patrick Hagan & Graeme West. Interpolation Methods for Curve Construction.
   Applied Mathematical Finance. Vol 13, No. 2, pp 89-129. June 2006.
@@ -52,14 +52,10 @@ curves at the same time).
   Wilmott Magazine, pp. 70-81. May 2008.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+import tensorflow.compat.v2 as tf
 
-import tensorflow as tf
-
-from tf_quant_finance.math import diff as diff_ops
 from tf_quant_finance.math import piecewise
+from tf_quant_finance.math.diff_ops import diff
 from tf_quant_finance.rates import forwards
 
 
@@ -113,7 +109,7 @@ def interpolate(times,
   to evaluate the `f(t)` for `t` as a vector of times but not build multiple
   curves at the same time).
 
-  ### Example
+  #### Example
 
   ```python
   interval_times = tf.constant([0.25, 0.5, 1.0, 2.0, 3.0], dtype=dtype)
@@ -131,7 +127,7 @@ def interpolate(times,
       times, interval_values, interval_times)
   ```
 
-  ### References:
+  #### References:
 
   [1]: Patrick Hagan & Graeme West. Interpolation Methods for Curve
     Construction. Applied Mathematical Finance. Vol 13, No. 2, pp 89-129.
@@ -169,7 +165,7 @@ def interpolate(times,
         computed from the largest interval time that is smaller than the time
         up to the given time.
   """
-  with tf.name_scope(
+  with tf.compat.v1.name_scope(
       name,
       default_name='interpolate',
       values=[times, interval_times, interval_values]):
@@ -181,8 +177,8 @@ def interpolate(times,
     control_deps = []
     if validate_args:
       control_deps = [
-          tf.debugging.assert_non_negative(times),
-          tf.debugging.assert_positive(interval_times)
+          tf.compat.v1.debugging.assert_non_negative(times),
+          tf.compat.v1.debugging.assert_positive(interval_times)
       ]
     with tf.compat.v1.control_dependencies(control_deps):
       # Step 1: Find the values at the endpoints.
@@ -305,7 +301,7 @@ def interpolate_forward_rate(interpolation_times,
     discrete forwards before interpolation.
     For more details on the interpolation procedure, see Ref. [1].
 
-  ### Example
+  #### Example
 
   ```python
     dtype = np.float64
@@ -323,7 +319,7 @@ def interpolate_forward_rate(interpolation_times,
     # Produces: [0.0229375, 0.05010625, 0.0609, 0.03625].
   ```
 
-  ### References:
+  #### References:
 
   [1]: Patrick Hagan & Graeme West. Methods for Constructing a Yield Curve.
     Wilmott Magazine, pp. 70-81. May 2008.
@@ -432,7 +428,7 @@ def interpolate_yields(interpolation_times,
 
     For more details on the interpolation procedure, see Ref. [1].
 
-  ### Example
+  #### Example
 
   ```python
     dtype = np.float64
@@ -447,7 +443,7 @@ def interpolate_yields(interpolation_times,
     # Produces [5.1171875, 5.09375, 5.0, 4.75]
   ```
 
-  ### References:
+  #### References:
 
   [1]: Patrick Hagan & Graeme West. Methods for Constructing a Yield Curve.
     Wilmott Magazine, pp. 70-81. May 2008.
@@ -560,8 +556,8 @@ def _interpolate_adjacent(times, values, name=None):
   """
   with tf.compat.v1.name_scope(
       name, default_name='interpolate_adjacent', values=[times, values]):
-    dt1 = diff_ops.diff(times, order=1, exclusive=False)
-    dt2 = diff_ops.diff(times, order=2, exclusive=False)[1:]
+    dt1 = diff(times, order=1, exclusive=False)
+    dt2 = diff(times, order=2, exclusive=False)[1:]
     weight_right = dt1[:-1] / dt2
     weight_left = dt1[1:] / dt2
     interior_values = weight_right * values[1:] + weight_left * values[:-1]
@@ -608,6 +604,8 @@ def _region_3(g1plus2g0, g0plus2g1, g0, g1, x):
   eta = 3 * g1 / (g1 - g0)
   x_cap = tf.math.minimum(x, eta)
   ratio = (eta - x_cap) / eta
+  # Replace NaN values (corresponding to g1 == 0) with zeros.
+  ratio = tf.where(tf.math.is_nan(ratio), tf.zeros_like(ratio), ratio)
   region_3_value = g1 + (g0 - g1) * tf.math.square(ratio)
   integrated_value = g1 * x + eta * (g0 - g1) / 3 * (1 - ratio**3)
   return is_region_3, region_3_value, integrated_value
@@ -633,3 +631,11 @@ def _region_4(g1plus2g0, g0plus2g1, g0, g1, x):
       shift * x + (g0 - shift) * eta * (1 - ratio_cap**3) / 3 + (g1 - shift) *
       (1 - eta) * (ratio_floor**3) / 3)
   return is_region_4, region_4_value, integrated_value
+
+
+__all__ = [
+    'diff',
+    'interpolate',
+    'interpolate_forward_rate',
+    'interpolate_yields',
+]

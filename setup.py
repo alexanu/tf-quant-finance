@@ -1,3 +1,4 @@
+# Lint as: python3
 # Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +14,8 @@
 # limitations under the License.
 # ==============================================================================
 """Setup for pip package."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
+import datetime
 from os import path
 import sys
 
@@ -34,13 +33,31 @@ cwd = path.abspath(path.dirname(__file__))
 with open(path.join(cwd, 'README.md'), encoding='utf-8') as f:
   long_description = f.read()
 
-__version__ = '0.0.1dev6'
-REQUIRED_PACKAGES = [
-    'attrs >= 18.2.0', 'tensorflow-probability >= 0.5.0', 'numpy >= 1.13.3'
-]
-
-project_name = 'tf-quant-finance'
 description = 'High-performance TensorFlow library for quantitative finance.'
+
+major_version = '0'
+minor_version = '0'
+patch_version = '1'
+
+if '--nightly' in sys.argv:
+  # Run `python3 setup.py --nightly ...` to create a nightly build.
+  sys.argv.remove('--nightly')
+  project_name = 'tff-nightly'
+  release_suffix = datetime.datetime.utcnow().strftime('.dev%Y%m%d')
+else:
+  project_name = 'tf-quant-finance'
+  # The suffix should be replaced with 'aN', 'bN', or 'rcN' (note: no dots) for
+  # respective alpha releases, beta releases, and release candidates. And it
+  # should be cleared, i.e. set to '', for stable releases (c.f. PEP 440).
+  release_suffix = '.dev19'
+
+__version__ = '.'.join([major_version, minor_version, patch_version])
+if release_suffix:
+  __version__ += release_suffix
+
+REQUIRED_PACKAGES = [
+    'attrs >= 18.2.0', 'tensorflow-probability >= 0.8.0', 'numpy >= 1.16.0'
+]
 
 
 class BinaryDistribution(Distribution):
@@ -71,10 +88,10 @@ setup(
         'Intended Audience :: Education',
         'Intended Audience :: Financial and Insurance Industry',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Natural Language :: English',
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Software Development :: Libraries :: Python Modules',
